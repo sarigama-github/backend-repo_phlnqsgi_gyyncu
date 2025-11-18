@@ -11,11 +11,10 @@ Model name is converted to lowercase for the collection name:
 - BlogPost -> "blogs" collection
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel, Field, EmailStr
+from typing import Optional, List
 
-# Example schemas (replace with your own):
-
+# Existing example schemas (kept for reference)
 class User(BaseModel):
     """
     Users collection schema
@@ -38,11 +37,28 @@ class Product(BaseModel):
     category: str = Field(..., description="Product category")
     in_stock: bool = Field(True, description="Whether product is in stock")
 
-# Add your own schemas here:
-# --------------------------------------------------
+# Coliving-specific schemas
+class Property(BaseModel):
+    """
+    Properties collection schema
+    Collection name: "property"
+    """
+    name: str = Field(..., description="Property name")
+    location: str = Field(..., description="Neighborhood / Area in Bangalore")
+    city: str = Field("Bengaluru", description="City")
+    description: str = Field(..., description="Short quirky description")
+    amenities: List[str] = Field(default_factory=list, description="List of amenities")
+    price_per_month: int = Field(..., ge=0, description="Starting price per bed per month (INR)")
+    image_url: Optional[str] = Field(None, description="Hero image URL")
+    slug: str = Field(..., description="URL-friendly identifier")
 
-# Note: The Flames database viewer will automatically:
-# 1. Read these schemas from GET /schema endpoint
-# 2. Use them for document validation when creating/editing
-# 3. Handle all database operations (CRUD) directly
-# 4. You don't need to create any database endpoints!
+class Inquiry(BaseModel):
+    """
+    Inquiries collection schema
+    Collection name: "inquiry"
+    """
+    name: str = Field(..., description="Full name of lead")
+    email: EmailStr = Field(..., description="Contact email")
+    phone: str = Field(..., description="Contact phone number")
+    message: Optional[str] = Field(None, description="Message from lead")
+    property_slug: Optional[str] = Field(None, description="Slug of the property interested in")
